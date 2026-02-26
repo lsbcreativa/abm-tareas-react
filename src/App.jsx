@@ -56,9 +56,44 @@ useEffect(  ()=>{
 
         return ()=> desuscribir()  //al cerrar la app, dejo de escuchar la base de datos
 
+},[usuario]) //se activa cuando el usuario se loguea
 
 
-},[usuario])
+//funcion para manejar el envio del formulario (crear o editar)
+
+const enviarTarea = async (e)=> {
+    e.preventDefault()
+    if(!textoTarea.trim()) return  //si el texto esta vacio, no hacemos nada
+
+    if(idTareaEnEdicion){//Si tenemos un id guardado, se edita
+        await updateDoc(doc(baseDeDatos,'tareas', idTareaEnEdicion), {descripcion: textoTarea})
+        setIdTareaEnEdicion(null)
+    }else{// si no hay un ID, Creamos una tarea
+        await addDoc(collection(baseDeDatos,'tareas'),{
+            descripcion: textoTarea, 
+            completada:false, 
+            fechaCreacion: Date.now()
+        }) //guardar el texto
+    }
+    setTextoTarea("") //limpiamos el campo de texto para poder crear una nueva tarea
+}
+
+//funcion para preparar el formulario para editar
+const activarEdicion = (tarea)=>{
+    setTextoTarea(tarea.descripcion) //pasamos la tarea del texto del input
+    setIdTareaEnEdicion(tarea.id) //guardar el id para saber que tarea es
+    }
+
+    //si aun no se conecta, mostramos la pantalla de carga
+
+    if(estaCargando) return <div> Cargando Aplicación </div>
+
+
+    return(
+        <div>
+            <h1>ABM de Prueba</h1>
+        </div>
+    )
 
 
 
